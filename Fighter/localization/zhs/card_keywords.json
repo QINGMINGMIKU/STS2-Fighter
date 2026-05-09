@@ -1,0 +1,14 @@
+{
+  "FIGHTER_KEYWORD_THROW.title": "投技",
+  "FIGHTER_KEYWORD_THROW.description": "无视防御造成伤害。",
+  "FIGHTER_KEYWORD_STARTER.title": "起手",
+  "FIGHTER_KEYWORD_STARTER.description": "获得 [gold]1[/gold] 层连击。",
+  "FIGHTER_KEYWORD_COMBO.title": "连击",
+  "FIGHTER_KEYWORD_COMBO.description": "消耗 [gold]1[/gold] 层连击发动追加效果。",
+  "FIGHTER_KEYWORD_CANCEL.title": "取消",
+  "FIGHTER_KEYWORD_CANCEL.description": "取消 N = 获得 N 层取消。\n必杀技/超必杀技消耗取消使费用 [blue]-1[/blue]。\n打出下一张牌后取消归零。",
+  "FIGHTER_KEYWORD_SPECIAL.title": "必杀",
+  "FIGHTER_KEYWORD_SPECIAL.description": "消耗 [gold]2[/gold] 层斗气打出。\n若处于 burnout，改为消耗能量 + 2×能量帧数。",
+  "FIGHTER_KEYWORD_SUPER.title": "超必杀",
+  "FIGHTER_KEYWORD_SUPER.description": "超必杀 N = 消耗 N 段超杀槽。\n回复 [blue]3[/blue] 层斗气。消耗所有有利帧提升效果。"
+}

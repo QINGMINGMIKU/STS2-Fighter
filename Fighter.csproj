@@ -1,0 +1,100 @@
+<Project Sdk="Godot.NET.Sdk/4.5.1">
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>true</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <DefaultItemExcludes>packages/**</DefaultItemExcludes>
+        <AppOutputBase>$(MSBuildProjectDirectory)\</AppOutputBase>
+        <RootNamespace>Fighter</RootNamespace>
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <LangVersion>12.0</LangVersion>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <AssemblyVersion>0.2.0.0</AssemblyVersion>
+        <FileVersion>0.2.0.0</FileVersion>
+        <Version>0.2.0</Version>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <Sts2Dir>C:\Program Files (x86)\Steam\steamapps\common\Slay the Spire 2</Sts2Dir>
+        <GodotExe>C:\Tools\Godot_v4.5.1-stable_mono_win64\Godot_v4.5.1-stable_mono_win64.exe</GodotExe>
+        <Sts2DataDir>$(Sts2Dir)/data_sts2_windows_x86_64</Sts2DataDir>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <Optimize>false</Optimize>
+        <DebugType>portable</DebugType>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <Optimize>true</Optimize>
+        <DebugType>none</DebugType>
+        <PathMap>$(AppOutputBase)=.\</PathMap>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <NoWarn>$(NoWarn);MSB3270;CS0436</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Reference Include="0Harmony">
+            <HintPath>$(Sts2DataDir)/0Harmony.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="sts2">
+            <HintPath>$(Sts2DataDir)/sts2.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="SmartFormat">
+            <HintPath>$(Sts2DataDir)/SmartFormat.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+
+        <Reference Include="STS2.RitsuLib">
+            <HintPath>$(Sts2Dir)\mods\STS2RitsuLib\STS2-RitsuLib.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <PackageReference Include="Krafs.Publicizer" Version="2.3.0" PrivateAssets="All" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Publicize Include="sts2" IncludeVirtualMembers="false" IncludeCompilerGeneratedMembers="false" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Remove="Fighter/**" />
+        <Compile Remove="shaders/**" />
+        <Compile Remove="_lib/**" />
+        <EmbeddedResource Remove="Fighter/**" />
+        <EmbeddedResource Remove="shaders/**" />
+        <EmbeddedResource Remove="_lib/**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include=".gitignore" />
+        <None Include="Fighter.json" />
+        <None Include="project.godot" />
+        <None Include="Fighter/**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include=".editorconfig" />
+    </ItemGroup>
+
+    <Target Name="Copy Mod" AfterTargets="PostBuildEvent">
+        <Message Text="Copying mod to Slay the Spire 2 mods folder..." Importance="high" />
+        <MakeDir Directories="$(Sts2Dir)/mods/$(MSBuildProjectName)/" />
+        <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(Sts2Dir)/mods/$(MSBuildProjectName)/" />
+        <Copy SourceFiles="$(TargetDir)$(TargetName).pdb" DestinationFolder="$(Sts2Dir)/mods/$(MSBuildProjectName)/" Condition="Exists('$(TargetDir)$(TargetName).pdb')" />
+        <Copy SourceFiles="$(MSBuildProjectName).json" DestinationFolder="$(Sts2Dir)/mods/$(MSBuildProjectName)/" />
+
+    </Target>
+
+    <Target Name="ExportPck">
+        <Message Text="Exporting PCK to Slay the Spire 2 mods folder..." Importance="high" />
+        <Exec Command="&quot;$(GodotExe)&quot; --headless --export-pack &quot;BasicExport&quot; &quot;$(Sts2Dir)/mods/$(MSBuildProjectName)/$(MSBuildProjectName).pck&quot;" EnvironmentVariables="IsInnerGodotExport=true;MSBUILDDISABLENODEREUSE=1" ContinueOnError="WarnAndContinue" />
+    </Target>
+
+</Project>

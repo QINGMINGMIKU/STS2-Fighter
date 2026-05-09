@@ -1,0 +1,8 @@
+{
+  "FIGHTER-FRAME_ADVANTAGE.title": "Frame Advantage",
+  "FIGHTER-FRAME_ADVANTAGE.description": "Positive = favorable, spendable resource. NL Negative = vulnerable to counter-hits.",
+  "FIGHTER-FIGHTING_SPIRIT.title": "Fighting Spirit",
+  "FIGHTER-FIGHTING_SPIRIT.description": "While active: +1 Strength, +1 Dexterity. NL Depleted at 0: Burnout.",
+  "FIGHTER-THROW_STUN.title": "Throw Stun",
+  "FIGHTER-THROW_STUN.description": "Cannot attack. Removed at start of turn."
+}

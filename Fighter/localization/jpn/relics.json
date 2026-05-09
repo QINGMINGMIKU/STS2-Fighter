@@ -1,0 +1,8 @@
+{
+  "FIGHTER-FIGHTER_HEADBAND.title": "Fighter's Headband",
+  "FIGHTER-FIGHTER_HEADBAND.description": "Counter Hit: +20% damage when attacking NL enemies with Attack intent, gain +2 Frames. NL Punish Counter: fully blocking an enemy NL Attack makes your next attack NL deal +20% and grant +4 Frames.",
+  "FIGHTER-FIGHTER_HEADBAND.flavor": "A worn headband, infused with the spirit of countless battles.",
+  "FIGHTER-SPIRIT_CHARM.title": "Spirit Charm",
+  "FIGHTER-SPIRIT_CHARM.description": "Start combat with 6 Fighting Spirit. NL Gain 1 each turn. NL Burnout at 0: 2 Weak, 2 Vulnerable.",
+  "FIGHTER-SPIRIT_CHARM.flavor": "Burns bright, but beware the flame that gutters."
+}

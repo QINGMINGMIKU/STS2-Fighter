@@ -1,0 +1,14 @@
+{
+  "FIGHTER_KEYWORD_THROW.title": "Throw",
+  "FIGHTER_KEYWORD_THROW.description": "Ignores Block.",
+  "FIGHTER_KEYWORD_STARTER.title": "Starter",
+  "FIGHTER_KEYWORD_STARTER.description": "Gain [gold]1[/gold] Combo.",
+  "FIGHTER_KEYWORD_COMBO.title": "Combo",
+  "FIGHTER_KEYWORD_COMBO.description": "Consume [gold]1[/gold] Combo for a bonus effect.",
+  "FIGHTER_KEYWORD_CANCEL.title": "Cancel",
+  "FIGHTER_KEYWORD_CANCEL.description": "Cancel N = Gain N Cancel.\nSpecial/Super cards consume Cancel for [blue]-1[/blue] Energy.\nCancel resets after your next card.",
+  "FIGHTER_KEYWORD_SPECIAL.title": "Special",
+  "FIGHTER_KEYWORD_SPECIAL.description": "Costs [gold]2[/gold] Fighting Spirit.\nDuring burnout, costs Energy + 2× Energy in frames instead.",
+  "FIGHTER_KEYWORD_SUPER.title": "Super",
+  "FIGHTER_KEYWORD_SUPER.description": "Super N = Consume N Super Gauge.\nRestores [blue]3[/blue] Fighting Spirit.\nConsumes all frames to boost effect."
+}

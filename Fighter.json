@@ -1,0 +1,17 @@
+{
+  "id": "Fighter",
+  "name": "Fighter",
+  "author": "Fighter mod author",
+  "description": "Fighter - a Street Fighter inspired character mod featuring Frame Advantage system, Counter Hits, and Fighting Spirit mechanics.",
+  "version": "v0.2.0",
+  "has_pck": true,
+  "has_dll": true,
+  "dependencies": [
+    {
+      "id": "STS2-RitsuLib",
+      "min_version": "0.2.15"
+    }
+  ],
+  "affects_gameplay": true,
+  "min_game_version": "0.104.0"
+}

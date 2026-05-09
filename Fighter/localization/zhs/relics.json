@@ -1,0 +1,11 @@
+{
+  "FIGHTER_RELIC_FIGHTER_HEADBAND.title": "格斗头巾",
+  "FIGHTER_RELIC_FIGHTER_HEADBAND.description": "你的攻击对意图为攻击的敌人造成 [gold]1.2 倍[/gold] 伤害，并获得 [blue]2[/blue] 点帧数。\n负帧时被攻击，敌人伤害 [red]1.2 倍[/red]。\n完全格挡后，下一次攻击伤害 [gold]1.2 倍[/gold]，获得 [blue]4[/blue] 点帧数。",
+  "FIGHTER_RELIC_FIGHTER_HEADBAND.flavor": "\"帧数就是一切。\"——隆",
+  "FIGHTER_RELIC_SPIRIT_CHARM.title": "斗气护符",
+  "FIGHTER_RELIC_SPIRIT_CHARM.description": "战斗开始时获得 [blue]6[/blue] 层斗气。\n有斗气时获得 +1 力量 +1 敏捷。\n每回合获得 [blue]1[/blue] 层斗气（上限 6）。\n斗气耗尽后进入 [red]burnout[/red]：2 回合内不获得斗气，受到 2 层虚弱 + 2 层脆弱。Burnout 结束后斗气回满 6 层。",
+  "FIGHTER_RELIC_SPIRIT_CHARM.flavor": "\"我还能打！\"",
+  "FIGHTER_RELIC_SUPER_ART_TALISMAN.title": "超杀护符",
+  "FIGHTER_RELIC_SUPER_ART_TALISMAN.description": "每打出 [blue]3[/blue] 张攻击牌，获得 [gold]1[/gold] 段超杀槽（上限 3 段）。",
+  "FIGHTER_RELIC_SUPER_ART_TALISMAN.flavor": "\"蓄力完毕！\""
+}

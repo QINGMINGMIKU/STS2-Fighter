@@ -1,0 +1,12 @@
+{
+  "FIGHTER-DEFEND_F.title": "Defend",
+  "FIGHTER-DEFEND_F.description": "Gain {Block:diff()} [gold]Block[/gold].",
+  "FIGHTER-STRIKE_L.title": "Light Strike",
+  "FIGHTER-STRIKE_L.description": "Deal {Damage:diff()} damage.",
+  "FIGHTER-STRIKE_H.title": "Heavy Strike",
+  "FIGHTER-STRIKE_H.description": "Deal {Damage:diff()} damage. NL Combo: if an Attack was played NL this turn, costs [blue]0[/blue] and NL consumes [blue]3[/blue] Frames.",
+  "FIGHTER-COMMAND_GRAB.title": "Command Grab",
+  "FIGHTER-COMMAND_GRAB.description": "Deal {Damage:diff()} damage. NL Requires [blue]6[/blue] Frames. NL Apply 1 Throw Stun to both sides.",
+  "FIGHTER-DRIVE_RUSH.title": "Drive Rush",
+  "FIGHTER-DRIVE_RUSH.description": "Costs [blue]2[/blue] Fighting Spirit. NL Gain {Frames:diff()} Frames."
+}

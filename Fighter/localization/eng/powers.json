@@ -1,0 +1,23 @@
+{
+  "FIGHTER_POWER_FRAME_ADVANTAGE.title": "Frame Advantage",
+  "FIGHTER_POWER_FRAME_ADVANTAGE.description": "Positive frames = advantage, spendable.\nNegative frames = punishable, take extra counter-hit damage.",
+  "FIGHTER_POWER_FRAME_ADVANTAGE.smartDescription": "{Amount} frames. Positive spendable, negative punishable.",
+  "FIGHTER_POWER_FIGHTING_SPIRIT.title": "Fighting Spirit",
+  "FIGHTER_POWER_FIGHTING_SPIRIT.description": "Max 6 stacks.\n+1 STR +1 DEX while active.\n+1 per turn (outside burnout).",
+  "FIGHTER_POWER_FIGHTING_SPIRIT.smartDescription": "{Amount} stacks. +1 STR +1 DEX.",
+  "FIGHTER_POWER_COMBO.title": "Combo",
+  "FIGHTER_POWER_COMBO.description": "Max 1 stack.\nEnables bonus effects on [gold]Combo[/gold] cards.",
+  "FIGHTER_POWER_COMBO.smartDescription": "Combo active. Enables combo bonus effects.",
+  "FIGHTER_POWER_SUPER_GAUGE.title": "Super Gauge",
+  "FIGHTER_POWER_SUPER_GAUGE.description": "Max 3 bars.\nEvery 3 attacks grant 1 bar.\nSuper cards can consume gauge for enhanced effects.",
+  "FIGHTER_POWER_SUPER_GAUGE.smartDescription": "{Amount} bar(s).",
+  "FIGHTER_POWER_STRIKE_THROW_MIXUP.title": "Strike-Throw Mixup",
+  "FIGHTER_POWER_STRIKE_THROW_MIXUP.description": "Attacks ignore Block.\nThrow frame cost -3.",
+  "FIGHTER_POWER_STRIKE_THROW_MIXUP.smartDescription": "Attacks ignore Block. Throw -3 frames.",
+  "FIGHTER_POWER_TIPSY.title": "Tipsy",
+  "FIGHTER_POWER_TIPSY.description": "Max 4 stacks.\nEnhances the effectiveness of drunken fist cards.",
+  "FIGHTER_POWER_TIPSY.smartDescription": "{Amount} stack(s).",
+  "FIGHTER_POWER_DEVILS_SONG_POWER.title": "Devil's Song",
+  "FIGHTER_POWER_DEVILS_SONG_POWER.description": "Tipsy is treated as 4 (max).\nEach attack gains 1 frame.",
+  "FIGHTER_POWER_DEVILS_SONG_POWER.smartDescription": "{Amount} turn(s) remaining. Tipsy treated as max."
+}

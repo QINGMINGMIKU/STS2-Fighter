@@ -1,0 +1,11 @@
+{
+  "FIGHTER_RELIC_FIGHTER_HEADBAND.title": "Fighter's Headband",
+  "FIGHTER_RELIC_FIGHTER_HEADBAND.description": "Your attacks deal [gold]1.2x[/gold] damage to enemies with Attack intent, granting [blue]2[/blue] frames.\nWhile at negative frames, enemy attacks deal [red]1.2x[/red] damage.\nAfter fully blocking, your next attack deals [gold]1.2x[/gold] damage, granting [blue]4[/blue] frames.",
+  "FIGHTER_RELIC_FIGHTER_HEADBAND.flavor": "\"Frames are everything.\" — Ryu",
+  "FIGHTER_RELIC_SPIRIT_CHARM.title": "Spirit Charm",
+  "FIGHTER_RELIC_SPIRIT_CHARM.description": "Start combat with [blue]6[/blue] Fighting Spirit.\nGain +1 STR +1 DEX while you have spirit.\nGain [blue]1[/blue] spirit per turn (max 6).\nAt 0 spirit, enter [red]burnout[/red]: no spirit gain for 2 turns, gain 2 Weak + 2 Vulnerable.\nAfter burnout, refill to 6 spirit.",
+  "FIGHTER_RELIC_SPIRIT_CHARM.flavor": "\"I can still fight!\"",
+  "FIGHTER_RELIC_SUPER_ART_TALISMAN.title": "Super Art Talisman",
+  "FIGHTER_RELIC_SUPER_ART_TALISMAN.description": "Every [blue]3[/blue] attacks, gain [gold]1[/gold] Super Gauge (max 3 bars).",
+  "FIGHTER_RELIC_SUPER_ART_TALISMAN.flavor": "\"Ready for the finish!\""
+}

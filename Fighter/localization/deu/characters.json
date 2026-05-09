@@ -1,0 +1,16 @@
+{
+  "FIGHTER-FIGHTER.title": "Fighter",
+  "FIGHTER-FIGHTER.titleObject": "Fighter",
+  "FIGHTER-FIGHTER.description": "A streetwise warrior who uses the Frame Advantage NL system and Fighting Spirit to battle foes.",
+  "FIGHTER-FIGHTER.cardsModifierTitle": "Fighter Cards",
+  "FIGHTER-FIGHTER.cardsModifierDescription": "Fighter cards now appear in rewards and shops.",
+  "FIGHTER-FIGHTER.possessiveAdjective": "his",
+  "FIGHTER-FIGHTER.pronounObject": "him",
+  "FIGHTER-FIGHTER.pronounPossessive": "his",
+  "FIGHTER-FIGHTER.pronounSubject": "he",
+  "FIGHTER-FIGHTER.aromaPrinciple": "[sine]True strength comes from within.[/sine]",
+  "FIGHTER-FIGHTER.banter.alive.endTurnPing": "[sine]Not over yet...[/sine]",
+  "FIGHTER-FIGHTER.banter.dead.endTurnPing": "...",
+  "FIGHTER-FIGHTER.eventDeathPrevention": "I cannot fall here!",
+  "FIGHTER-FIGHTER.goldMonologue": "[sine]Gold is useful, even for a warrior.[/sine]"
+}

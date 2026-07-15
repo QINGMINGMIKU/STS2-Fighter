@@ -19,6 +19,10 @@ public sealed class FighterCharacter : ModCharacterTemplate<FighterCardPool, Fig
     public override float AttackAnimDelay => 0.15f;
     public override float CastAnimDelay => 0.25f;
 
+    // TODO: replace with custom energy counter scene after fixing NParticlesContainer reference
+    // public override string? CustomEnergyCounterPath =>
+    //     "res://Fighter/scenes/combat/energy_counters/fighter_energy_counter.tscn";
+
     public override List<string> GetArchitectAttackVfx() =>
     [
         "vfx/vfx_attack_blunt", "vfx/vfx_heavy_blunt", "vfx/vfx_attack_slash",

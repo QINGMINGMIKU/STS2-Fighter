@@ -1,9 +1,9 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using STS2RitsuLib.Combat.SecondaryResources;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
@@ -35,13 +35,13 @@ public sealed class SpiralArrow : ModCardTemplate
         await PowerCmd.Apply<Combo>(choiceContext, Owner.Creature, 1, Owner.Creature, this);
 
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this)
+            .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target!)
             .Execute(choiceContext);
 
         if (hadCombo)
         {
-            await PowerCmd.Apply<FrameAdvantage>(choiceContext, Owner.Creature, 1, Owner.Creature, this);
+            await FrameHelper.Gain(Owner!, 1);
         }
     }
 

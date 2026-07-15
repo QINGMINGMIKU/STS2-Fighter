@@ -6,7 +6,7 @@ namespace Fighter;
 public sealed class FighterCardPool : TypeListCardPoolModel
 {
     public override string Title => "格斗家";
-    public override string EnergyColorName => "red";
+    public override string EnergyColorName => "fighterRed";
     public override Color DeckEntryCardColor => new(0.85f, 0.12f, 0.08f);
     public override bool IsColorless => false;
 

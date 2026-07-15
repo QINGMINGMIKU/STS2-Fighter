@@ -1,9 +1,9 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using STS2RitsuLib.Combat.SecondaryResources;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
@@ -28,26 +28,28 @@ public sealed class Tatsumaki : ModCardTemplate
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
+        // Snapshot frame count before any modifications
+        var framesBeforePlay = FrameHelper.Get(Owner!);
+
         // First hit
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this)
+            .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target!)
             .Execute(choiceContext);
-        await PowerCmd.Apply<FrameAdvantage>(choiceContext, Owner!.Creature, 1, Owner.Creature, this);
+        await FrameHelper.Gain(Owner!, 1);
 
         // Second hit
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this)
+            .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target!)
             .Execute(choiceContext);
-        await PowerCmd.Apply<FrameAdvantage>(choiceContext, Owner.Creature, 1, Owner.Creature, this);
+        await FrameHelper.Gain(Owner!, 1);
 
-        // Extra hit if frames >= 5
-        var frames = Owner.Creature.GetPower<FrameAdvantage>()?.Amount ?? 0;
-        if (frames >= 5)
+        // Extra hit if frames BEFORE play â‰?5
+        if (framesBeforePlay >= 5)
         {
             await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-                .FromCard(this)
+                .FromCard(this, cardPlay)
                 .Targeting(cardPlay.Target!)
                 .Execute(choiceContext);
         }

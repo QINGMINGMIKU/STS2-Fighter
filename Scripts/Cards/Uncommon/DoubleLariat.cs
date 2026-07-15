@@ -1,10 +1,10 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
-using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using STS2RitsuLib.Combat.SecondaryResources;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
@@ -49,7 +49,7 @@ public sealed class DoubleLariat : ModCardTemplate
             await PlayerCmd.GainEnergy(1, Owner);
 
         // Special cost
-        await SpecialHelper.PaySpecialCost(choiceContext, Owner, this);
+        await SpecialHelper.PaySpecialCost(Owner!, this);
 
         await PowerCmd.Apply<Cancel>(choiceContext, Owner.Creature, CancelStacks, Owner.Creature, this);
 
@@ -61,15 +61,14 @@ public sealed class DoubleLariat : ModCardTemplate
             foreach (var enemy in enemies)
             {
                 await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-                    .FromCard(this)
+                    .FromCard(this, cardPlay)
                     .Targeting(enemy)
                     .Execute(choiceContext);
             }
         }
 
         // Draw 2, consume 5 frames (can go negative)
-        await PowerCmd.ModifyAmount(choiceContext,
-            Owner!.Creature.GetPower<FrameAdvantage>()!, -FrameThreshold, Owner.Creature, null);
+        await FrameHelper.Lose(Owner!, FrameThreshold);
         await CardPileCmd.Draw(choiceContext, 2, Owner);
     }
 

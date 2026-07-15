@@ -1,9 +1,9 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using STS2RitsuLib.Combat.SecondaryResources;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
@@ -36,12 +36,10 @@ public sealed class CommandGrab : ModCardTemplate
         var discount = Owner!.Creature.GetPower<StrikeThrowMixup>() != null ? 3 : 0;
         var effectiveCost = Math.Max(0, FrameCost - discount);
 
-        var fa = Owner!.Creature.GetPower<FrameAdvantage>();
-        if (fa != null)
-            await PowerCmd.ModifyAmount(choiceContext, fa, -effectiveCost, Owner.Creature, null, false);
+        await FrameHelper.Lose(Owner, effectiveCost);
 
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this)
+            .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target!)
             .Execute(choiceContext);
     }

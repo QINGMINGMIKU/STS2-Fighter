@@ -32,7 +32,7 @@ public sealed class DragonlashKick : ModCardTemplate
         await PowerCmd.Apply<Combo>(choiceContext, Owner!.Creature, 1, Owner.Creature, this);
 
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this)
+            .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target!)
             .Execute(choiceContext);
     }

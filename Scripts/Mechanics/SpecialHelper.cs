@@ -1,9 +1,7 @@
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
-using MegaCrit.Sts2.Core.Entities.Powers;
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
+using STS2RitsuLib.Combat.SecondaryResources;
 
 namespace Fighter;
 
@@ -13,8 +11,8 @@ public static class SpecialHelper
 
     public static bool CanPlaySpecial(CardModel card, Player player)
     {
-        var spirit = player.Creature.GetPower<FightingSpirit>();
-        if (spirit != null && spirit.Amount >= SpiritCost)
+        var spirit = SecondaryResourceCmd.Get(player, FighterResources.FightingSpirit);
+        if (spirit >= SpiritCost)
             return true;
 
         var energyCost = card.EnergyCost.Canonical;
@@ -22,23 +20,23 @@ public static class SpecialHelper
         if (currentEnergy < energyCost)
             return false;
 
-        var frames = player.Creature.GetPower<FrameAdvantage>()?.Amount ?? 0;
+        var frames = FrameHelper.Get(player);
         return frames >= energyCost * 2;
     }
 
-    public static async Task<int> PaySpecialCost(PlayerChoiceContext ctx, Player player, CardModel card)
+    public static async Task<int> PaySpecialCost(Player player, CardModel card)
     {
-        var spirit = player.Creature.GetPower<FightingSpirit>();
-        if (spirit != null && spirit.Amount >= SpiritCost)
+        var spirit = SecondaryResourceCmd.Get(player, FighterResources.FightingSpirit);
+        if (spirit >= SpiritCost)
         {
-            await SpiritHelper.SpendSpirit(ctx, player, SpiritCost);
+            await SpiritHelper.SpendSpirit(player, SpiritCost);
             return 0;
         }
 
         var energyCost = card.EnergyCost.Canonical;
-        var fa = player.Creature.GetPower<FrameAdvantage>();
-        if (fa != null && fa.Amount >= energyCost * 2)
-            await PowerCmd.ModifyAmount(ctx, fa, -(energyCost * 2), player.Creature, null, false);
+        var frames = FrameHelper.Get(player);
+        if (frames >= energyCost * 2)
+            await FrameHelper.Lose(player, energyCost * 2);
 
         return energyCost;
     }

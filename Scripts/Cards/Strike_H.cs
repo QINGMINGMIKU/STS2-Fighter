@@ -1,9 +1,10 @@
+using Godot;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using STS2RitsuLib.Combat.SecondaryResources;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
@@ -35,19 +36,21 @@ public sealed class Strike_H : ModCardTemplate
         var combo = Owner!.Creature.GetPower<Combo>();
         if (combo != null && combo.Amount > 0)
         {
-            var fa = Owner.Creature.GetPower<FrameAdvantage>();
-            if (fa != null)
-                await PowerCmd.ModifyAmount(choiceContext, fa, -ComboFrameCost, Owner.Creature, null, false);
+            // Consume frames
+            await FrameHelper.Lose(Owner, ComboFrameCost);
 
-            await PowerCmd.Remove<Combo>(Owner.Creature);
+            // Consume Combo (single stack only)
+            await PowerCmd.Remove(combo);
 
+            // TC power: draw on combo consume
             var tc = Owner.Creature.GetPower<TCPower>();
+            Godot.GD.Print($"[Fighter] Strike_H TC check: tc={tc?.GetType().Name ?? "null"}");
             if (tc != null)
                 await CardPileCmd.Draw(choiceContext, 1, Owner);
         }
 
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this)
+            .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target!)
             .Execute(choiceContext);
     }

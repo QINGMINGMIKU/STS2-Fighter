@@ -20,7 +20,7 @@ public sealed class Bakkai : ModCardTemplate
         new DamageVar(4, ValueProp.Move)
     ];
 
-    protected override IEnumerable<string> RegisteredKeywordIds => [FighterKeywords.SpecialId];
+    protected override IEnumerable<string> RegisteredKeywordIds => [FighterKeywords.SpecialId, FighterKeywords.TipsyId];
 
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: "Fighter/images/card_portraits/bakkai.png"
@@ -43,7 +43,7 @@ public sealed class Bakkai : ModCardTemplate
         for (var i = 0; i < hits; i++)
         {
             await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-                .FromCard(this)
+                .FromCard(this, cardPlay)
                 .Targeting(cardPlay.Target!)
                 .Execute(choiceContext);
         }

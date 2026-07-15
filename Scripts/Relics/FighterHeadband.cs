@@ -1,13 +1,14 @@
+using Godot;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
-using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.MonsterMoves.Intents;
 using MegaCrit.Sts2.Core.ValueProps;
+using STS2RitsuLib.Combat.SecondaryResources;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
@@ -32,8 +33,11 @@ public sealed class FighterHeadband : ModRelicTemplate
         BigIconPath: "Fighter/images/relics/fighter_headband_big.png"
     );
 
+    private const float CriticalArtHpThreshold = 0.25f;
+    private const float CriticalArtDamageBonus = 1.10f;
+
     public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props,
-        Creature? dealer, CardModel? cardSource)
+        Creature? dealer, CardModel? cardSource, CardPlay? cardPlay = null)
     {
         if (target == null || dealer == null || Owner == null)
             return 1m;
@@ -42,14 +46,49 @@ public sealed class FighterHeadband : ModRelicTemplate
         if (playerCreature == null)
             return 1m;
 
-        var (multiplier, frames, frameTarget) = CalculateCounterHit(dealer, target, playerCreature);
-        if (multiplier > 1f)
+        var result = 1m;
+
+        // Counter-hit multiplier
+        var (counterHitMult, frames, frameTarget) = CalculateCounterHit(dealer, target, Owner);
+        if (counterHitMult > 1f)
         {
             _pendingFrames = frames;
             _pendingFrameTarget = frameTarget;
-            return (decimal)multiplier;
+            result = (decimal)counterHitMult;
         }
-        return 1m;
+
+        // Critical Art: Super cards at ≤25% HP deal +10% damage
+        if (cardSource != null && dealer == playerCreature && HasSuperKeyword(cardSource))
+        {
+            if (playerCreature.CurrentHp > 0 && (float)playerCreature.CurrentHp / playerCreature.MaxHp <= CriticalArtHpThreshold)
+                result *= (decimal)CriticalArtDamageBonus;
+        }
+
+        return result;
+    }
+
+    private static bool HasSuperKeyword(CardModel card)
+    {
+        if (FighterKeywords.Super == null) return false;
+        return card.Keywords.Contains(FighterKeywords.Super.CardKeywordValue);
+    }
+
+    private static bool HasCancelKeyword(CardModel card)
+    {
+        if (FighterKeywords.Cancel == null) return false;
+        return card.Keywords.Contains(FighterKeywords.Cancel.CardKeywordValue);
+    }
+
+    private static bool HasComboKeyword(CardModel card)
+    {
+        if (FighterKeywords.Combo == null) return false;
+        return card.Keywords.Contains(FighterKeywords.Combo.CardKeywordValue);
+    }
+
+    private static bool HasStarterKeyword(CardModel card)
+    {
+        if (FighterKeywords.Starter == null) return false;
+        return card.Keywords.Contains(FighterKeywords.Starter.CardKeywordValue);
     }
 
     public override async Task AfterDamageReceived(PlayerChoiceContext choiceContext, Creature target,
@@ -75,14 +114,45 @@ public sealed class FighterHeadband : ModRelicTemplate
     {
         await GrantPendingFrames(choiceContext);
 
-        // Combo: set Strike_H cost to 0
-        var comboActive = Owner?.Creature.GetPower<Combo>() is { Amount: > 0 };
-        if (comboActive && Owner?.PlayerCombatState?.Hand != null)
+        if (Owner?.PlayerCombatState?.Hand != null)
         {
-            foreach (var card in Owner.PlayerCombatState.Hand.Cards)
+            var comboActive = Owner.Creature.GetPower<Combo>() is { Amount: > 0 };
+
+            if (comboActive)
             {
-                if (card is Strike_H)
-                    card.EnergyCost.SetThisTurnOrUntilPlayed(0);
+                // Set all Strike_H to 0 cost while Combo is active
+                foreach (var card in Owner.PlayerCombatState.Hand.Cards)
+                {
+                    if (card is Strike_H)
+                        card.EnergyCost.SetThisTurnOrUntilPlayed(0);
+                }
+            }
+            else
+            {
+                // Restore canonical cost when Combo is gone
+                foreach (var card in Owner.PlayerCombatState.Hand.Cards)
+                {
+                    if (card is Strike_H)
+                        card.EnergyCost.SetThisTurnOrUntilPlayed(card.EnergyCost.Canonical);
+                }
+            }
+        }
+
+        // Cancel: resets to zero after playing a non-Cancel card
+        if (cardPlay.Card != null && !HasCancelKeyword(cardPlay.Card))
+        {
+            Godot.GD.Print($"[Fighter] ClearCancel: card={cardPlay.Card.GetType().Name}");
+            await CancelHelper.ClearCancel(choiceContext, Owner!.Creature);
+        }
+
+        // Combo: clear after non-Starter, non-Combo card
+        if (cardPlay.Card != null && !HasComboKeyword(cardPlay.Card) && !HasStarterKeyword(cardPlay.Card))
+        {
+            var combo = Owner!.Creature.GetPower<Combo>();
+            if (combo is { Amount: > 0 })
+            {
+                Godot.GD.Print($"[Fighter] ClearCombo: card={cardPlay.Card.GetType().Name}");
+                await PowerCmd.Remove(combo);
             }
         }
 
@@ -119,8 +189,10 @@ public sealed class FighterHeadband : ModRelicTemplate
     }
 
     private static (float multiplier, int frames, Creature? frameTarget) CalculateCounterHit(
-        Creature source, Creature target, Creature playerCreature)
+        Creature source, Creature target, Player player)
     {
+        var playerCreature = player.Creature;
+
         if (source == playerCreature && CounterHitState.PlayerPunishCounterReady)
         {
             CounterHitState.PlayerPunishCounterReady = false;
@@ -128,15 +200,17 @@ public sealed class FighterHeadband : ModRelicTemplate
         }
 
         if (source == playerCreature && target != playerCreature
-            && target.IsMonster && target.Monster?.NextMove?.Intents?.OfType<AttackIntent>().Any() == true)
+            && target.IsMonster
+            && target.Monster?.NextMove != null
+            && target.Monster.NextMove.Intents?.OfType<AttackIntent>().Any() == true)
         {
-            var bonusFrames = playerCreature.GetPower<WhiffPunish>() != null ? 2 : 0;
+            var bonusFrames = playerCreature.GetPower<WhiffPunish>()?.Amount ?? 0;
             return (DamageMultiplier, CounterHitFrames + bonusFrames, source);
         }
 
         if (target == playerCreature
             && source != playerCreature
-            && (playerCreature.GetPower<FrameAdvantage>()?.Amount ?? 0) < 0)
+            && FrameHelper.Get(player) < 0)
         {
             return (DamageMultiplier, CounterHitFrames, source);
         }
@@ -146,12 +220,11 @@ public sealed class FighterHeadband : ModRelicTemplate
 
     private async Task GrantFrameAdvantage(PlayerChoiceContext choiceContext, Creature target, int frames)
     {
-        if (frames == 0)
+        if (frames <= 0 || Owner == null)
             return;
 
-        if (target != Owner?.Creature && target is not IFighterTagged)
-            return;
-
-        await PowerCmd.Apply<FrameAdvantage>(choiceContext, target, frames, target, null);
+        // Only grant frames to the player
+        if (target == Owner.Creature)
+            await FrameHelper.Gain(Owner, frames);
     }
 }

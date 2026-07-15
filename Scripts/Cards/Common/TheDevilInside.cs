@@ -1,9 +1,9 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using STS2RitsuLib.Combat.SecondaryResources;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
@@ -22,6 +22,8 @@ public sealed class TheDevilInside : ModCardTemplate
         new BlockVar(5, ValueProp.Move)
     ];
 
+    protected override IEnumerable<string> RegisteredKeywordIds => [FighterKeywords.TipsyId];
+
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: "Fighter/images/card_portraits/the_devil_inside.png"
     );
@@ -33,7 +35,7 @@ public sealed class TheDevilInside : ModCardTemplate
             await PowerCmd.Apply<Tipsy>(choiceContext, Owner.Creature, 1, Owner.Creature, this);
 
         if (TurnState.StarterPlayedThisTurn)
-            await PowerCmd.Apply<FrameAdvantage>(choiceContext, Owner.Creature, 3, Owner.Creature, this);
+            await FrameHelper.Gain(Owner!, 3);
 
         await CreatureCmd.GainBlock(Owner!.Creature, DynamicVars.Block, cardPlay);
     }

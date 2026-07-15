@@ -1,9 +1,9 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using STS2RitsuLib.Combat.SecondaryResources;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
@@ -31,11 +31,11 @@ public sealed class Hadoken : ModCardTemplate
         var hasCombo = Owner!.Creature.GetPower<Combo>() is { Amount: > 0 };
         if (!hasCombo)
         {
-            await PowerCmd.Apply<FrameAdvantage>(choiceContext, Owner.Creature, 2, Owner.Creature, this);
+            await FrameHelper.Gain(Owner!, 2);
         }
 
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-            .FromCard(this)
+            .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target!)
             .Execute(choiceContext);
     }

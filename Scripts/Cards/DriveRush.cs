@@ -1,9 +1,9 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using STS2RitsuLib.Cards.DynamicVars;
+using STS2RitsuLib.Combat.SecondaryResources;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
@@ -30,8 +30,8 @@ public sealed class DriveRush : ModCardTemplate
         get
         {
             if (!base.IsPlayable) return false;
-            var spirit = Owner?.Creature.GetPower<FightingSpirit>();
-            return spirit != null && spirit.Amount > 0;
+            if (Owner == null) return false;
+            return SecondaryResourceCmd.Get(Owner, FighterResources.FightingSpirit) > 0;
         }
     }
 
@@ -41,13 +41,13 @@ public sealed class DriveRush : ModCardTemplate
 
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        var sufficient = await SpiritHelper.SpendSpirit(choiceContext, Owner!, SpiritCost);
+        var sufficient = await SpiritHelper.SpendSpirit(Owner!, SpiritCost);
         var frames = sufficient
             ? DynamicVars["Frames"].IntValue
             : (int)(DynamicVars["Frames"].IntValue * SpiritHelper.InsufficientPenalty);
 
         if (frames > 0)
-            await PowerCmd.Apply<FrameAdvantage>(choiceContext, Owner!.Creature, frames, Owner.Creature, this);
+            await FrameHelper.Gain(Owner!, frames);
     }
 
     protected override void OnUpgrade()

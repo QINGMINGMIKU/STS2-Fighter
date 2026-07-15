@@ -23,7 +23,7 @@ public sealed class GetsugaSaiho : ModCardTemplate
     ];
 
     protected override IEnumerable<string> RegisteredKeywordIds => [
-        FighterKeywords.SuperId
+        FighterKeywords.SuperId, FighterKeywords.TipsyId
     ];
 
     protected override bool IsPlayable
@@ -50,12 +50,12 @@ public sealed class GetsugaSaiho : ModCardTemplate
             damage *= 2;
 
         await DamageCmd.Attack(damage)
-            .FromCard(this)
+            .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target!)
             .Execute(choiceContext);
 
         if (tipsy == 4)
-            await PowerCmd.Apply<SuperGauge>(choiceContext, Owner.Creature, SuperGaugeCost, Owner.Creature, this);
+            await SuperArtTalisman.GainGauge(Owner!, SuperGaugeCost);
     }
 
     protected override void OnUpgrade()

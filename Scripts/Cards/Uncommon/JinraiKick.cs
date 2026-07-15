@@ -35,7 +35,7 @@ public sealed class JinraiKick : ModCardTemplate
         for (var i = 0; i < 3; i++)
         {
             await DamageCmd.Attack(DynamicVars.Damage.BaseValue + bonus)
-                .FromCard(this)
+                .FromCard(this, cardPlay)
                 .Targeting(cardPlay.Target!)
                 .Execute(choiceContext);
         }

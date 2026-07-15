@@ -1,10 +1,10 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
-using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.ValueProps;
+using STS2RitsuLib.Combat.SecondaryResources;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
@@ -51,15 +51,16 @@ public sealed class GrandStorm : ModCardTemplate
         await SuperArtTalisman.SpendGauge(Owner!, SuperGaugeCost);
 
         // Super: restore 3 spirit
-        await PowerCmd.Apply<FightingSpirit>(choiceContext, Owner.Creature, 3, Owner.Creature, this);
+        await SecondaryResourceCmd.Gain(Owner!, FighterResources.FightingSpirit, 3);
+        FighterCombatUiActivatePatch.Refresh(Owner!);
 
         // Consume all frames for bonus
-        var fa = Owner.Creature.GetPower<FrameAdvantage>();
+        var frames = FrameHelper.Get(Owner!);
         var frameBonus = 0m;
-        if (fa != null && fa.Amount > 0)
+        if (frames > 0)
         {
-            frameBonus = fa.Amount;
-            await PowerCmd.ModifyAmount(choiceContext, fa, -fa.Amount, Owner.Creature, null, false);
+            frameBonus = frames;
+            await FrameHelper.Lose(Owner!, frames);
         }
 
         var mainDamage = DynamicVars.Damage.BaseValue + frameBonus;
@@ -67,7 +68,7 @@ public sealed class GrandStorm : ModCardTemplate
 
         // Main target: full damage
         await DamageCmd.Attack(mainDamage)
-            .FromCard(this)
+            .FromCard(this, cardPlay)
             .Targeting(cardPlay.Target!)
             .Execute(choiceContext);
 
@@ -79,7 +80,7 @@ public sealed class GrandStorm : ModCardTemplate
             if (enemy != cardPlay.Target)
             {
                 await DamageCmd.Attack(splashDamage)
-                    .FromCard(this)
+                    .FromCard(this, cardPlay)
                     .Targeting(enemy)
                     .Execute(choiceContext);
             }

@@ -21,7 +21,7 @@ public sealed class LuminousDiveKick : ModCardTemplate
     ];
 
     protected override IEnumerable<string> RegisteredCardTagIds => ["Strike"];
-    protected override IEnumerable<string> RegisteredKeywordIds => [FighterKeywords.CancelId];
+    protected override IEnumerable<string> RegisteredKeywordIds => [FighterKeywords.CancelId, FighterKeywords.TipsyId];
 
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: "Fighter/images/card_portraits/luminous_dive_kick.png"
@@ -35,7 +35,7 @@ public sealed class LuminousDiveKick : ModCardTemplate
         for (var i = 0; i < hits; i++)
         {
             await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
-                .FromCard(this)
+                .FromCard(this, cardPlay)
                 .Targeting(cardPlay.Target!)
                 .Execute(choiceContext);
         }

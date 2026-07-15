@@ -1,7 +1,5 @@
-using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Players;
-using MegaCrit.Sts2.Core.Entities.Powers;
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using STS2RitsuLib.Combat.SecondaryResources;
 
 namespace Fighter;
 
@@ -11,22 +9,23 @@ public static class SpiritHelper
 
     /// <summary>
     /// Consume <paramref name="cost"/> Fighting Spirit from the player.
-    /// Returns true if spirit was sufficient, false if insufficient
-    /// (all remaining consumed, -25% penalty applies).
+    /// Returns true if spirit was sufficient, false if insufficient.
     /// </summary>
-    public static async Task<bool> SpendSpirit(PlayerChoiceContext ctx, Player player, int cost)
+    public static async Task<bool> SpendSpirit(Player player, int cost)
     {
-        var spirit = player.Creature.GetPower<FightingSpirit>();
-        if (spirit == null || spirit.Amount <= 0)
+        var spirit = SecondaryResourceCmd.Get(player, FighterResources.FightingSpirit);
+        if (spirit <= 0)
             return false;
 
-        if (spirit.Amount >= cost)
+        if (spirit >= cost)
         {
-            await PowerCmd.ModifyAmount(ctx, spirit, -cost, player.Creature, null, false);
+            await SecondaryResourceCmd.Lose(player, FighterResources.FightingSpirit, cost);
+            FighterCombatUiActivatePatch.Refresh(player);
             return true;
         }
 
-        await PowerCmd.ModifyAmount(ctx, spirit, -spirit.Amount, player.Creature, null, false);
+        await SecondaryResourceCmd.Lose(player, FighterResources.FightingSpirit, spirit);
+        FighterCombatUiActivatePatch.Refresh(player);
         return false;
     }
 }

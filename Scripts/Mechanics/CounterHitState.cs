@@ -1,5 +1,5 @@
 using MegaCrit.Sts2.Core.Entities.Players;
-using MegaCrit.Sts2.Core.Entities.Powers;
+using STS2RitsuLib.Combat.SecondaryResources;
 
 namespace Fighter;
 
@@ -11,8 +11,7 @@ public static class CounterHitState
 
     public static bool PlayerHasNegativeFrames(Player player)
     {
-        var frames = player.Creature.GetPower<FrameAdvantage>()?.Amount ?? 0;
-        return frames < 0;
+        return FrameHelper.Get(player) < 0;
     }
 
     public static void OnTurnEnd()

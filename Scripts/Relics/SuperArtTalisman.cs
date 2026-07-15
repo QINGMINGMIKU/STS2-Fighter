@@ -1,7 +1,6 @@
-using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
-using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using STS2RitsuLib.Combat.SecondaryResources;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
@@ -13,14 +12,13 @@ public sealed class SuperArtTalisman : ModRelicTemplate
 {
     public override RelicRarity Rarity => RelicRarity.Starter;
 
-    private const int AttacksPerGauge = 3;
-    private const int MaxGauge = 3;
+    public const int AttacksPerGauge = 3;
+    public const int MaxGauge = 3;
 
     private int _attackCount;
-    private int _gaugeCount;
 
     public override bool ShowCounter => true;
-    public override int DisplayAmount => _gaugeCount;
+    public override int DisplayAmount => HasGauge(Owner!);
 
     public override RelicAssetProfile AssetProfile => new(
         IconPath: "Fighter/images/relics/super_art_talisman.png",
@@ -30,40 +28,50 @@ public sealed class SuperArtTalisman : ModRelicTemplate
 
     public void IncrementAttackCounter()
     {
+        if (Owner == null) return;
+
         _attackCount++;
         if (_attackCount >= AttacksPerGauge)
         {
             _attackCount = 0;
-            if (_gaugeCount < MaxGauge)
-            {
-                _gaugeCount++;
-                Flash();
-                InvokeDisplayAmountChanged();
-            }
+            _ = GainGauge(Owner, 1);
         }
+    }
+
+    public static int HasGauge(Player player)
+    {
+        return SecondaryResourceCmd.Get(player, FighterResources.SuperGauge);
     }
 
     public static bool HasGauge(Player player, int amount)
     {
+        return HasGauge(player) >= amount;
+    }
+
+    public static async Task SpendGauge(Player player, int amount)
+    {
+        await SecondaryResourceCmd.Lose(player, FighterResources.SuperGauge, amount);
+        FighterCombatUiActivatePatch.Refresh(player);
+
         foreach (var relic in player.Relics)
         {
             if (relic is SuperArtTalisman talisman)
-                return talisman._gaugeCount >= amount;
+                talisman.InvokeDisplayAmountChanged();
         }
-        return false;
     }
 
-    public static Task SpendGauge(Player player, int amount)
+    public static async Task GainGauge(Player player, int amount)
     {
+        await SecondaryResourceCmd.Gain(player, FighterResources.SuperGauge, amount);
+        FighterCombatUiActivatePatch.Refresh(player);
+
         foreach (var relic in player.Relics)
         {
-            if (relic is SuperArtTalisman talisman && talisman._gaugeCount >= amount)
+            if (relic is SuperArtTalisman talisman)
             {
-                talisman._gaugeCount -= amount;
+                talisman.Flash();
                 talisman.InvokeDisplayAmountChanged();
-                return Task.CompletedTask;
             }
         }
-        return Task.CompletedTask;
     }
 }

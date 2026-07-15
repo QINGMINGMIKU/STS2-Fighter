@@ -1,8 +1,8 @@
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
-using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models.Powers;
+using STS2RitsuLib.Combat.SecondaryResources;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
 
@@ -17,7 +17,7 @@ public sealed class Tenshin : ModCardTemplate
     {
     }
 
-    protected override IEnumerable<string> RegisteredKeywordIds => [FighterKeywords.ThrowId];
+    protected override IEnumerable<string> RegisteredKeywordIds => [FighterKeywords.ThrowId, FighterKeywords.TipsyId];
 
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: "Fighter/images/card_portraits/tenshin.png"
@@ -32,9 +32,7 @@ public sealed class Tenshin : ModCardTemplate
         }
         else
         {
-            var fa = Owner!.Creature.GetPower<FrameAdvantage>();
-            if (fa != null)
-                await PowerCmd.ModifyAmount(choiceContext, fa, -FrameCost, Owner.Creature, null, false);
+            await FrameHelper.Lose(Owner!, FrameCost);
         }
 
         var vulnCount = tipsy >= 3 ? 3 : 2;
@@ -46,7 +44,7 @@ public sealed class Tenshin : ModCardTemplate
 
     protected override void OnUpgrade()
     {
-        // Upgrade: 给予3层易伤 (from 2), cost reduction already handled by tipsy check
+        EnergyCost.SetCustomBaseCost(0);
     }
 
     private int GetEffectiveTipsy() => TipsyHelper.GetEffectiveTipsy(Owner!.Creature);

@@ -50,16 +50,18 @@ public class Entry
     {
         var registry = ModSecondaryResourceRegistry.For(ModId);
 
-        registry.Register(FighterResources.FrameAdvantage, new SecondaryResourceDefinition(
+        // Use short local IDs for Register — RitsuLib normalizes them into compound IDs.
+        // FighterResources.* constants carry the compound IDs used by SecondaryResourceCmd.
+        registry.Register("frame_advantage", new SecondaryResourceDefinition(
             defaultAmount: 0,
             minAmount: int.MinValue,
             hardMaxAmount: int.MaxValue,
             turnStartPolicy: SecondaryResourceTurnStartPolicy.None,
             persistencePolicy: SecondaryResourcePersistencePolicy.Combat
         ));
-        registry.AlwaysShowInCombatUiForCharacter<FighterCharacter>(FighterResources.FrameAdvantage);
+        registry.AlwaysShowInCombatUiForCharacter<FighterCharacter>("frame_advantage");
 
-        registry.Register(FighterResources.SuperGauge, new SecondaryResourceDefinition(
+        registry.Register("super_gauge", new SecondaryResourceDefinition(
             defaultAmount: 0,
             baseMaxAmount: 3,
             hardMaxAmount: 3,
@@ -67,9 +69,9 @@ public class Entry
             turnStartPolicy: SecondaryResourceTurnStartPolicy.None,
             persistencePolicy: SecondaryResourcePersistencePolicy.Run
         ));
-        registry.AlwaysShowInCombatUiForCharacter<FighterCharacter>(FighterResources.SuperGauge);
+        registry.AlwaysShowInCombatUiForCharacter<FighterCharacter>("super_gauge");
 
-        registry.Register(FighterResources.FightingSpirit, new SecondaryResourceDefinition(
+        registry.Register("fighting_spirit", new SecondaryResourceDefinition(
             defaultAmount: 0,
             baseMaxAmount: 6,
             hardMaxAmount: 6,
@@ -77,7 +79,7 @@ public class Entry
             turnStartPolicy: SecondaryResourceTurnStartPolicy.None,
             persistencePolicy: SecondaryResourcePersistencePolicy.Combat
         ));
-        registry.AlwaysShowInCombatUiForCharacter<FighterCharacter>(FighterResources.FightingSpirit);
+        registry.AlwaysShowInCombatUiForCharacter<FighterCharacter>("fighting_spirit");
     }
 
     private static void OnSideTurnStarting(SideTurnStartingEvent e)

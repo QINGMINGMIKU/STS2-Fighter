@@ -24,8 +24,8 @@ public sealed class Strike_H : ModCardTemplate
         new DamageVar(8, ValueProp.Move)
     ];
 
-    protected override IEnumerable<string> RegisteredCardTagIds => ["Strike"];
-    protected override IEnumerable<string> RegisteredKeywordIds => [FighterKeywords.ComboId];
+    protected override HashSet<CardTag> CanonicalTags => [CardTag.Strike];
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [FighterKeywords.Combo!.CardKeywordValue];
 
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: "Fighter/images/card_portraits/strike_h.png"

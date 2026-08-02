@@ -33,5 +33,11 @@
   "FIGHTER_POWER_TUNDRA_STORM_POWER.smartDescription": "Blocked damage → heal + reflect.",
   "FIGHTER_POWER_YI_JIANLIAN_POWER.title": "One-Button Chain",
   "FIGHTER_POWER_YI_JIANLIAN_POWER.description": "Cancel cards deal 80% damage but randomly play Cancel cards from your draw pile.",
-  "FIGHTER_POWER_YI_JIANLIAN_POWER.smartDescription": "Cancel cards 80% dmg, random Cancel plays."
+  "FIGHTER_POWER_YI_JIANLIAN_POWER.smartDescription": "Cancel cards 80% dmg, random Cancel plays.",
+  "FIGHTER_POWER_COUNTER_HIT_POWER.title": "Counter Hit",
+  "FIGHTER_POWER_COUNTER_HIT_POWER.description": "Next incoming attack deals +20% damage and grants the attacker 2 frames.",
+  "FIGHTER_POWER_COUNTER_HIT_POWER.smartDescription": "Incoming attack +20% dmg, attacker +2 frames.",
+  "FIGHTER_POWER_PUNISH_COUNTER_POWER.title": "Punish Counter",
+  "FIGHTER_POWER_PUNISH_COUNTER_POWER.description": "Next incoming attack deals +20% damage and grants the attacker 4 frames.",
+  "FIGHTER_POWER_PUNISH_COUNTER_POWER.smartDescription": "Incoming attack +20% dmg, attacker +4 frames."
 }

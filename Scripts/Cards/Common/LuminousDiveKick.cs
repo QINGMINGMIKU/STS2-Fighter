@@ -20,8 +20,8 @@ public sealed class LuminousDiveKick : ModCardTemplate
         new DamageVar(7, ValueProp.Move)
     ];
 
-    protected override IEnumerable<string> RegisteredCardTagIds => ["Strike"];
-    protected override IEnumerable<string> RegisteredKeywordIds => [FighterKeywords.CancelId, FighterKeywords.TipsyId];
+    protected override HashSet<CardTag> CanonicalTags => [CardTag.Strike];
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [FighterKeywords.Cancel!.CardKeywordValue, FighterKeywords.Tipsy!.CardKeywordValue];
 
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: "Fighter/images/card_portraits/luminous_dive_kick.png"

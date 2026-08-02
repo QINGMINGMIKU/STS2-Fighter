@@ -23,9 +23,9 @@ public sealed class CommandGrab : ModCardTemplate
         new DamageVar(13, ValueProp.Move | ValueProp.Unblockable)
     ];
 
-    protected override IEnumerable<string> RegisteredCardTagIds => ["Strike"];
+    protected override HashSet<CardTag> CanonicalTags => [CardTag.Strike];
 
-    protected override IEnumerable<string> RegisteredKeywordIds => [FighterKeywords.ThrowId];
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [FighterKeywords.Throw!.CardKeywordValue];
 
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: "Fighter/images/card_portraits/command_grab.png"

@@ -22,7 +22,7 @@ public sealed class TheDevilInside : ModCardTemplate
         new BlockVar(5, ValueProp.Move)
     ];
 
-    protected override IEnumerable<string> RegisteredKeywordIds => [FighterKeywords.TipsyId];
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [FighterKeywords.Tipsy!.CardKeywordValue];
 
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: "Fighter/images/card_portraits/the_devil_inside.png"

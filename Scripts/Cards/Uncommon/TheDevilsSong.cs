@@ -20,8 +20,8 @@ public sealed class TheDevilsSong : ModCardTemplate
     {
     }
 
-    protected override IEnumerable<string> RegisteredKeywordIds => [
-        FighterKeywords.SuperId, FighterKeywords.TipsyId
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [
+        FighterKeywords.Super!.CardKeywordValue, FighterKeywords.Tipsy!.CardKeywordValue
     ];
 
     protected override IEnumerable<DynamicVar> CanonicalVars => [

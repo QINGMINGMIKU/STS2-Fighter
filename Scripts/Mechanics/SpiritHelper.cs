@@ -20,12 +20,10 @@ public static class SpiritHelper
         if (spirit >= cost)
         {
             await SecondaryResourceCmd.Lose(player, FighterResources.FightingSpirit, cost);
-            FighterCombatUiActivatePatch.Refresh(player);
             return true;
         }
 
         await SecondaryResourceCmd.Lose(player, FighterResources.FightingSpirit, spirit);
-        FighterCombatUiActivatePatch.Refresh(player);
         return false;
     }
 }

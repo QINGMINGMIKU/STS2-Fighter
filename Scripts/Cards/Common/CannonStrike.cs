@@ -19,7 +19,7 @@ public sealed class CannonStrike : ModCardTemplate
         new DamageVar(5, ValueProp.Move)
     ];
 
-    protected override IEnumerable<string> RegisteredCardTagIds => ["Strike"];
+    protected override HashSet<CardTag> CanonicalTags => [CardTag.Strike];
 
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: "Fighter/images/card_portraits/cannon_strike.png"

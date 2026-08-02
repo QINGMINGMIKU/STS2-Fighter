@@ -14,7 +14,7 @@ public partial class FighterFrameCounter : Control
     private static readonly Color NegativeColor = new(1f, 0.2f, 0.2f, 1f);
     private static readonly Color ZeroColor = new(0.6f, 0.6f, 0.6f, 1f);
 
-    private Label? _label;
+    private MegaLabel? _label;
     private TextureRect? _icon;
     private int _displayed = int.MinValue;
     private bool _initialized;
@@ -51,13 +51,15 @@ public partial class FighterFrameCounter : Control
         container.AddThemeConstantOverride("separation", 4);
         AddChild(container);
 
-        _label = new Label
+        _label = new MegaLabel
         {
             Name = "FrameLabel",
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center,
             SizeFlagsHorizontal = SizeFlags.ExpandFill,
             SizeFlagsVertical = SizeFlags.ExpandFill,
+            MinFontSize = 36,
+            MaxFontSize = 36,
         };
         container.AddChild(_label);
     }

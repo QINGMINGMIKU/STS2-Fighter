@@ -20,8 +20,8 @@ public sealed class Strike_L : ModCardTemplate
         new DamageVar(4, ValueProp.Move)
     ];
 
-    protected override IEnumerable<string> RegisteredCardTagIds => ["Strike"];
-    protected override IEnumerable<string> RegisteredKeywordIds => [FighterKeywords.StarterId];
+    protected override HashSet<CardTag> CanonicalTags => [CardTag.Strike];
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [FighterKeywords.Starter!.CardKeywordValue];
 
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: "Fighter/images/card_portraits/strike_l.png"
@@ -30,7 +30,6 @@ public sealed class Strike_L : ModCardTemplate
     protected override async Task OnPlay(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
         TurnState.StarterPlayedThisTurn = true;
-        await PowerCmd.Apply<Combo>(choiceContext, Owner!.Creature, 1, Owner.Creature, this);
 
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)

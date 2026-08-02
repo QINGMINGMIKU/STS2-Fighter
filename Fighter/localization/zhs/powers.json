@@ -33,5 +33,11 @@
   "FIGHTER_POWER_TUNDRA_STORM_POWER.smartDescription": "被格挡的伤害转换为治疗与反弹。",
   "FIGHTER_POWER_YI_JIANLIAN_POWER.title": "一键连",
   "FIGHTER_POWER_YI_JIANLIAN_POWER.description": "取消牌造成的伤害变为 80%，但可以从抽牌堆随机打出取消牌。",
-  "FIGHTER_POWER_YI_JIANLIAN_POWER.smartDescription": "取消牌伤害 80%，随机打出取消牌。"
+  "FIGHTER_POWER_YI_JIANLIAN_POWER.smartDescription": "取消牌伤害 80%，随机打出取消牌。",
+  "FIGHTER_POWER_COUNTER_HIT_POWER.title": "打康",
+  "FIGHTER_POWER_COUNTER_HIT_POWER.description": "受到的下一次攻击伤害 +20%，攻击者获得 2 帧。",
+  "FIGHTER_POWER_COUNTER_HIT_POWER.smartDescription": "受击时伤害 +20%，攻击者 +2 帧。",
+  "FIGHTER_POWER_PUNISH_COUNTER_POWER.title": "确反康",
+  "FIGHTER_POWER_PUNISH_COUNTER_POWER.description": "受到的下一次攻击伤害 +20%，攻击者获得 4 帧。",
+  "FIGHTER_POWER_PUNISH_COUNTER_POWER.smartDescription": "受击时伤害 +20%，攻击者 +4 帧。"
 }

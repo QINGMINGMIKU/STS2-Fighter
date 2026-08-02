@@ -6,7 +6,6 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Models;
-using MegaCrit.Sts2.Core.MonsterMoves.Intents;
 using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Combat.SecondaryResources;
 using STS2RitsuLib.Interop.AutoRegistration;
@@ -20,13 +19,6 @@ public sealed class FighterHeadband : ModRelicTemplate
 {
     public override RelicRarity Rarity => RelicRarity.Starter;
 
-    private const float DamageMultiplier = 1.20f;
-    private const int CounterHitFrames = 2;
-    private const int PunishCounterFrames = 4;
-
-    private Creature? _pendingFrameTarget;
-    private int _pendingFrames;
-
     public override RelicAssetProfile AssetProfile => new(
         IconPath: "Fighter/images/relics/fighter_headband.png",
         IconOutlinePath: "Fighter/images/relics/fighter_headband_outline.png",
@@ -35,6 +27,10 @@ public sealed class FighterHeadband : ModRelicTemplate
 
     private const float CriticalArtHpThreshold = 0.25f;
     private const float CriticalArtDamageBonus = 1.10f;
+
+    // ═══════════════════════
+    //  Damage modifier — consume counter-hit marks on attack
+    // ═══════════════════════
 
     public override decimal ModifyDamageMultiplicative(Creature? target, decimal amount, ValueProp props,
         Creature? dealer, CardModel? cardSource, CardPlay? cardPlay = null)
@@ -48,13 +44,33 @@ public sealed class FighterHeadband : ModRelicTemplate
 
         var result = 1m;
 
-        // Counter-hit multiplier
-        var (counterHitMult, frames, frameTarget) = CalculateCounterHit(dealer, target, Owner);
-        if (counterHitMult > 1f)
+        // Player attacking an enemy → consume counter-hit mark (确反康优先)
+        // Only consume on real damage, not during card targeting preview (cardPlay == null)
+        if (cardPlay != null && dealer == playerCreature && target != playerCreature)
         {
-            _pendingFrames = frames;
-            _pendingFrameTarget = frameTarget;
-            result = (decimal)counterHitMult;
+            // 确反康 — Punish Counter (fully blocked): higher priority, +4 frames
+            var punish = target.GetPower<PunishCounterPower>();
+            if (punish != null)
+            {
+                _ = PowerCmd.Remove(punish);
+                _ = FrameHelper.Gain(Owner, PunishCounterPower.BonusFrames);
+                result = (decimal)PunishCounterPower.DamageMultiplier;
+            }
+            // 打康 — Counter Hit (enemy intends to Attack): +2 frames + WhiffPunish
+            else if (target.GetPower<CounterHitPower>() is { } counter)
+            {
+                _ = PowerCmd.Remove(counter);
+                var bonusFrames = playerCreature.GetPower<WhiffPunish>()?.Amount ?? 0;
+                _ = FrameHelper.Gain(Owner, CounterHitPower.BonusFrames + bonusFrames);
+                result = (decimal)CounterHitPower.DamageMultiplier;
+            }
+        }
+
+        // 打康 A2 — enemy counter-hits player at negative frames
+        if (target == playerCreature && dealer != playerCreature && dealer.IsMonster
+            && FrameHelper.Get(Owner) < 0)
+        {
+            result = (decimal)CounterHitPower.DamageMultiplier;
         }
 
         // Critical Art: Super cards at ≤25% HP deal +10% damage
@@ -67,52 +83,36 @@ public sealed class FighterHeadband : ModRelicTemplate
         return result;
     }
 
-    private static bool HasSuperKeyword(CardModel card)
-    {
-        if (FighterKeywords.Super == null) return false;
-        return card.Keywords.Contains(FighterKeywords.Super.CardKeywordValue);
-    }
-
-    private static bool HasCancelKeyword(CardModel card)
-    {
-        if (FighterKeywords.Cancel == null) return false;
-        return card.Keywords.Contains(FighterKeywords.Cancel.CardKeywordValue);
-    }
-
-    private static bool HasComboKeyword(CardModel card)
-    {
-        if (FighterKeywords.Combo == null) return false;
-        return card.Keywords.Contains(FighterKeywords.Combo.CardKeywordValue);
-    }
-
-    private static bool HasStarterKeyword(CardModel card)
-    {
-        if (FighterKeywords.Starter == null) return false;
-        return card.Keywords.Contains(FighterKeywords.Starter.CardKeywordValue);
-    }
+    // ═══════════════════════
+    //  Defensive hook — apply Punish Counter mark on full block
+    // ═══════════════════════
 
     public override async Task AfterDamageReceived(PlayerChoiceContext choiceContext, Creature target,
         DamageResult result, ValueProp props, Creature? dealer, CardModel? cardSource)
     {
-        await GrantPendingFrames(choiceContext);
-
-        if (dealer == null || Owner == null || target != Owner.Creature)
+        if (dealer == null || Owner == null || target != Owner.Creature || dealer == Owner.Creature)
             return;
 
-        if (dealer != Owner.Creature && result.WasFullyBlocked)
-            CounterHitState.PlayerPunishCounterReady = true;
-
-        if (target == Owner.Creature && result.TotalDamage > 0)
+        // Fully blocked → apply/refresh Punish Counter to attacker (max 1)
+        if (result.WasFullyBlocked)
         {
-            CounterHitState.PlayerDamageTakenThisTurn += result.TotalDamage;
-            if (result.WasFullyBlocked)
-                CounterHitState.PlayerDamageBlockedThisTurn += result.TotalDamage;
+            var existing = dealer.GetPower<PunishCounterPower>();
+            if (existing != null)
+                _ = PowerCmd.Remove(existing);
+            _ = PowerCmd.Apply<PunishCounterPower>(
+                new ThrowingPlayerChoiceContext(), dealer, 1, Owner.Creature, null);
         }
     }
 
+    // ═══════════════════════
+    //  Card hooks — Combo, Cancel, Super Art
+    // ═══════════════════════
+
     public override async Task AfterCardPlayed(PlayerChoiceContext choiceContext, CardPlay cardPlay)
     {
-        await GrantPendingFrames(choiceContext);
+        // Starter keyword: auto-apply 1 Combo
+        if (Owner != null && cardPlay.Card != null && HasStarterKeyword(cardPlay.Card))
+            _ = PowerCmd.Apply<Combo>(choiceContext, Owner.Creature, 1, Owner.Creature, cardPlay.Card);
 
         if (Owner?.PlayerCombatState?.Hand != null)
         {
@@ -120,7 +120,6 @@ public sealed class FighterHeadband : ModRelicTemplate
 
             if (comboActive)
             {
-                // Set all Strike_H to 0 cost while Combo is active
                 foreach (var card in Owner.PlayerCombatState.Hand.Cards)
                 {
                     if (card is Strike_H)
@@ -129,7 +128,6 @@ public sealed class FighterHeadband : ModRelicTemplate
             }
             else
             {
-                // Restore canonical cost when Combo is gone
                 foreach (var card in Owner.PlayerCombatState.Hand.Cards)
                 {
                     if (card is Strike_H)
@@ -138,7 +136,7 @@ public sealed class FighterHeadband : ModRelicTemplate
             }
         }
 
-        // Cancel: resets to zero after playing a non-Cancel card
+        // Cancel: clears after playing a non-Cancel card
         if (cardPlay.Card != null && !HasCancelKeyword(cardPlay.Card))
         {
             Godot.GD.Print($"[Fighter] ClearCancel: card={cardPlay.Card.GetType().Name}");
@@ -173,58 +171,34 @@ public sealed class FighterHeadband : ModRelicTemplate
     public override async Task AfterPlayerTurnStart(PlayerChoiceContext choiceContext, Player player)
     {
         if (player != Owner) return;
-        CounterHitState.PlayerDamageTakenThisTurn = 0;
-        CounterHitState.PlayerDamageBlockedThisTurn = 0;
-        await CancelHelper.ClearCancel(choiceContext, player.Creature);
+        // Cancel clearing is handled by FighterInnatePower
     }
 
-    private async Task GrantPendingFrames(PlayerChoiceContext choiceContext)
+    // ═══════════════════════
+    //  Keyword helpers
+    // ═══════════════════════
+
+    private static bool HasSuperKeyword(CardModel card)
     {
-        if (_pendingFrames > 0 && _pendingFrameTarget != null)
-        {
-            await GrantFrameAdvantage(choiceContext, _pendingFrameTarget, _pendingFrames);
-            _pendingFrames = 0;
-            _pendingFrameTarget = null;
-        }
+        if (FighterKeywords.Super == null) return false;
+        return card.Keywords.Contains(FighterKeywords.Super.CardKeywordValue);
     }
 
-    private static (float multiplier, int frames, Creature? frameTarget) CalculateCounterHit(
-        Creature source, Creature target, Player player)
+    private static bool HasCancelKeyword(CardModel card)
     {
-        var playerCreature = player.Creature;
-
-        if (source == playerCreature && CounterHitState.PlayerPunishCounterReady)
-        {
-            CounterHitState.PlayerPunishCounterReady = false;
-            return (DamageMultiplier, PunishCounterFrames, source);
-        }
-
-        if (source == playerCreature && target != playerCreature
-            && target.IsMonster
-            && target.Monster?.NextMove != null
-            && target.Monster.NextMove.Intents?.OfType<AttackIntent>().Any() == true)
-        {
-            var bonusFrames = playerCreature.GetPower<WhiffPunish>()?.Amount ?? 0;
-            return (DamageMultiplier, CounterHitFrames + bonusFrames, source);
-        }
-
-        if (target == playerCreature
-            && source != playerCreature
-            && FrameHelper.Get(player) < 0)
-        {
-            return (DamageMultiplier, CounterHitFrames, source);
-        }
-
-        return (1f, 0, null);
+        if (FighterKeywords.Cancel == null) return false;
+        return card.Keywords.Contains(FighterKeywords.Cancel.CardKeywordValue);
     }
 
-    private async Task GrantFrameAdvantage(PlayerChoiceContext choiceContext, Creature target, int frames)
+    private static bool HasComboKeyword(CardModel card)
     {
-        if (frames <= 0 || Owner == null)
-            return;
+        if (FighterKeywords.Combo == null) return false;
+        return card.Keywords.Contains(FighterKeywords.Combo.CardKeywordValue);
+    }
 
-        // Only grant frames to the player
-        if (target == Owner.Creature)
-            await FrameHelper.Gain(Owner, frames);
+    private static bool HasStarterKeyword(CardModel card)
+    {
+        if (FighterKeywords.Starter == null) return false;
+        return card.Keywords.Contains(FighterKeywords.Starter.CardKeywordValue);
     }
 }

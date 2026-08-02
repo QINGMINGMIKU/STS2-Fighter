@@ -22,8 +22,8 @@ public sealed class GetsugaSaiho : ModCardTemplate
         new DamageVar(35, ValueProp.Move)
     ];
 
-    protected override IEnumerable<string> RegisteredKeywordIds => [
-        FighterKeywords.SuperId, FighterKeywords.TipsyId
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [
+        FighterKeywords.Super!.CardKeywordValue, FighterKeywords.Tipsy!.CardKeywordValue
     ];
 
     protected override bool IsPlayable

@@ -20,7 +20,7 @@ public sealed class QuickSpinKnuckle : ModCardTemplate
         new DamageVar(6, ValueProp.Move | ValueProp.Unblockable)
     ];
 
-    protected override IEnumerable<string> RegisteredCardTagIds => ["Strike"];
+    protected override HashSet<CardTag> CanonicalTags => [CardTag.Strike];
 
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: "Fighter/images/card_portraits/quick_spin_knuckle.png"

@@ -1,4 +1,5 @@
 using Godot;
+using MegaCrit.Sts2.addons.mega_text;
 
 namespace Fighter;
 
@@ -10,7 +11,7 @@ namespace Fighter;
 public partial class FightingSpiritGauge : Control
 {
     private ColorRect? _bar;
-    private Label? _label;
+    private MegaLabel? _label;
     private bool _initialized;
     private int _displayed = -1;
 
@@ -47,14 +48,15 @@ public partial class FightingSpiritGauge : Control
         AddChild(_bar);
 
         // Label
-        _label = new Label
+        _label = new MegaLabel
         {
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center,
+            MinFontSize = 14,
+            MaxFontSize = 14,
         };
         _label.SetAnchorsPreset(LayoutPreset.FullRect);
         _label.AddThemeColorOverride("font_color", new Color(1, 1, 1, 1));
-        _label.AddThemeFontSizeOverride("font_size", 14);
         AddChild(_label);
     }
 

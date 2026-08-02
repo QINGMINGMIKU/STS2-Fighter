@@ -20,7 +20,7 @@ public sealed class Hadoken : ModCardTemplate
         new DamageVar(11, ValueProp.Move)
     ];
 
-    protected override IEnumerable<string> RegisteredCardTagIds => ["Strike"];
+    protected override HashSet<CardTag> CanonicalTags => [CardTag.Strike];
 
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: "Fighter/images/card_portraits/hadoken.png"

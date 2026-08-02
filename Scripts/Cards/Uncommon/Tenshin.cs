@@ -17,7 +17,7 @@ public sealed class Tenshin : ModCardTemplate
     {
     }
 
-    protected override IEnumerable<string> RegisteredKeywordIds => [FighterKeywords.ThrowId, FighterKeywords.TipsyId];
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [FighterKeywords.Throw!.CardKeywordValue, FighterKeywords.Tipsy!.CardKeywordValue];
 
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: "Fighter/images/card_portraits/tenshin.png"

@@ -20,7 +20,7 @@ public sealed class Tatsumaki : ModCardTemplate
         new DamageVar(5, ValueProp.Move)
     ];
 
-    protected override IEnumerable<string> RegisteredCardTagIds => ["Strike"];
+    protected override HashSet<CardTag> CanonicalTags => [CardTag.Strike];
 
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: "Fighter/images/card_portraits/tatsumaki.png"
@@ -45,7 +45,7 @@ public sealed class Tatsumaki : ModCardTemplate
             .Execute(choiceContext);
         await FrameHelper.Gain(Owner!, 1);
 
-        // Extra hit if frames BEFORE play â‰?5
+        // Extra hit if frames BEFORE play â‰¥5
         if (framesBeforePlay >= 5)
         {
             await DamageCmd.Attack(DynamicVars.Damage.BaseValue)

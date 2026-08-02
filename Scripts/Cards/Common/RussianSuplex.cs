@@ -21,7 +21,7 @@ public sealed class RussianSuplex : ModCardTemplate
         new DamageVar(8, ValueProp.Move)
     ];
 
-    protected override IEnumerable<string> RegisteredKeywordIds => [FighterKeywords.ThrowId];
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [FighterKeywords.Throw!.CardKeywordValue];
 
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: "Fighter/images/card_portraits/russian_suplex.png"

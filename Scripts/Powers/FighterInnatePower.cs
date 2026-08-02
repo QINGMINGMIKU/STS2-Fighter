@@ -1,8 +1,13 @@
 using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Models.Powers;
+using MegaCrit.Sts2.Core.MonsterMoves.Intents;
+using MegaCrit.Sts2.Core.ValueProps;
 using STS2RitsuLib.Combat.SecondaryResources;
 using STS2RitsuLib.Interop.AutoRegistration;
 using STS2RitsuLib.Scaffolding.Content;
@@ -35,6 +40,22 @@ public sealed class FighterInnatePower : ModPowerTemplate
     );
 
     // ═══════════════════════
+    //  Throw keyword — damage ignores block
+    // ═══════════════════════
+
+    public override decimal ModifyDamageAdditive(Creature? target, decimal amount, ValueProp props,
+        Creature? dealer, CardModel? cardSource, CardPlay? cardPlay = null)
+    {
+        if (target == null || cardSource == null || dealer != Owner || target.Block <= 0)
+            return 0m;
+
+        if (FighterKeywords.Throw != null && cardSource.Keywords.Contains(FighterKeywords.Throw.CardKeywordValue))
+            return target.Block;
+
+        return 0m;
+    }
+
+    // ═══════════════════════
     //  Turn start (spirit + clear combo/cancel)
     // ═══════════════════════
 
@@ -49,6 +70,32 @@ public sealed class FighterInnatePower : ModPowerTemplate
 
         await CancelHelper.ClearCancel(choiceContext, Owner);
 
+        // Counter-hit mark logic — player turn start
+        if (Owner!.CombatState != null)
+        {
+            foreach (var enemy in Owner.CombatState.GetOpponentsOf(Owner))
+            {
+                if (!enemy.IsMonster) continue;
+
+                // Clear 打康 from last turn (expires at end of player's turn)
+                var oldCounter = enemy.GetPower<CounterHitPower>();
+                if (oldCounter != null)
+                    _ = PowerCmd.Remove(oldCounter);
+
+                // 确反康存在时不施加打康
+                if (enemy.GetPower<PunishCounterPower>() != null)
+                    continue;
+
+                // Apply 打康 if enemy intends to Attack (max 1)
+                if (enemy.Monster?.NextMove != null
+                    && enemy.Monster.NextMove.Intents?.OfType<AttackIntent>().Any() == true)
+                {
+                    _ = PowerCmd.Apply<CounterHitPower>(
+                        new ThrowingPlayerChoiceContext(), enemy, 1, Owner, null);
+                }
+            }
+        }
+
         // ── Fighting Spirit ──
         var spirit = SecondaryResourceCmd.Get(player, FighterResources.FightingSpirit);
 
@@ -59,7 +106,6 @@ public sealed class FighterInnatePower : ModPowerTemplate
                 await SecondaryResourceCmd.Set(player, FighterResources.FightingSpirit, InitialSpirit);
             _burnoutRemaining = 0;
             await ApplyStatBonus(choiceContext, player);
-            FighterCombatUiActivatePatch.Refresh(player);
             return;
         }
 
@@ -71,14 +117,12 @@ public sealed class FighterInnatePower : ModPowerTemplate
                 await SecondaryResourceCmd.Set(player, FighterResources.FightingSpirit, BurnoutRefill);
                 await ApplyStatBonus(choiceContext, player);
             }
-            FighterCombatUiActivatePatch.Refresh(player);
             return;
         }
 
         if (spirit <= 0)
         {
             await TriggerBurnout(choiceContext, player);
-            FighterCombatUiActivatePatch.Refresh(player);
             return;
         }
 
@@ -87,7 +131,6 @@ public sealed class FighterInnatePower : ModPowerTemplate
                 Math.Min(SpiritPerTurn, 6 - spirit));
 
         await ApplyStatBonus(choiceContext, player);
-        FighterCombatUiActivatePatch.Refresh(player);
     }
 
     // ═══════════════════════

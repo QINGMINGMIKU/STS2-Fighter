@@ -51,7 +51,6 @@ public sealed class SuperArtTalisman : ModRelicTemplate
     public static async Task SpendGauge(Player player, int amount)
     {
         await SecondaryResourceCmd.Lose(player, FighterResources.SuperGauge, amount);
-        FighterCombatUiActivatePatch.Refresh(player);
 
         foreach (var relic in player.Relics)
         {
@@ -63,7 +62,6 @@ public sealed class SuperArtTalisman : ModRelicTemplate
     public static async Task GainGauge(Player player, int amount)
     {
         await SecondaryResourceCmd.Gain(player, FighterResources.SuperGauge, amount);
-        FighterCombatUiActivatePatch.Refresh(player);
 
         foreach (var relic in player.Relics)
         {

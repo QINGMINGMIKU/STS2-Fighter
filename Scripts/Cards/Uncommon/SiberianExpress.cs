@@ -23,7 +23,7 @@ public sealed class SiberianExpress : ModCardTemplate
         new DamageVar(14, ValueProp.Move)
     ];
 
-    protected override IEnumerable<string> RegisteredKeywordIds => [FighterKeywords.ThrowId];
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [FighterKeywords.Throw!.CardKeywordValue];
 
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: "Fighter/images/card_portraits/siberian_express.png"

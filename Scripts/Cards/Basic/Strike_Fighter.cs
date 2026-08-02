@@ -20,7 +20,7 @@ public sealed class Strike_Fighter : ModCardTemplate
         new DamageVar(6, ValueProp.Move)
     ];
 
-    protected override IEnumerable<string> RegisteredCardTagIds => ["Strike"];
+    protected override HashSet<CardTag> CanonicalTags => [CardTag.Strike];
 
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: "Fighter/images/card_portraits/strike_fighter.png"

@@ -20,8 +20,8 @@ public sealed class SpiralArrow : ModCardTemplate
         new DamageVar(7, ValueProp.Move)
     ];
 
-    protected override IEnumerable<string> RegisteredCardTagIds => ["Strike"];
-    protected override IEnumerable<string> RegisteredKeywordIds => [FighterKeywords.StarterId];
+    protected override HashSet<CardTag> CanonicalTags => [CardTag.Strike];
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [FighterKeywords.Starter!.CardKeywordValue];
 
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: "Fighter/images/card_portraits/spiral_arrow.png"
@@ -31,8 +31,6 @@ public sealed class SpiralArrow : ModCardTemplate
     {
         TurnState.StarterPlayedThisTurn = true;
         var hadCombo = Owner!.Creature.GetPower<Combo>() is { Amount: > 0 };
-
-        await PowerCmd.Apply<Combo>(choiceContext, Owner.Creature, 1, Owner.Creature, this);
 
         await DamageCmd.Attack(DynamicVars.Damage.BaseValue)
             .FromCard(this, cardPlay)

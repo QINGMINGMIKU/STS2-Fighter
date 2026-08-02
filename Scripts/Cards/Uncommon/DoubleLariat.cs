@@ -24,8 +24,8 @@ public sealed class DoubleLariat : ModCardTemplate
         new DamageVar(3, ValueProp.Move)
     ];
 
-    protected override IEnumerable<string> RegisteredKeywordIds => [
-        FighterKeywords.CancelId, FighterKeywords.SpecialId
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [
+        FighterKeywords.Cancel!.CardKeywordValue, FighterKeywords.Special!.CardKeywordValue
     ];
 
     protected override bool IsPlayable

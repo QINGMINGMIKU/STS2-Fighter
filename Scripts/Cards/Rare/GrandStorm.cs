@@ -23,8 +23,8 @@ public sealed class GrandStorm : ModCardTemplate
         new DamageVar(50, ValueProp.Move | ValueProp.Unblockable)
     ];
 
-    protected override IEnumerable<string> RegisteredKeywordIds => [
-        FighterKeywords.ThrowId, FighterKeywords.SuperId
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [
+        FighterKeywords.Throw!.CardKeywordValue, FighterKeywords.Super!.CardKeywordValue
     ];
 
     protected override bool IsPlayable
@@ -52,7 +52,6 @@ public sealed class GrandStorm : ModCardTemplate
 
         // Super: restore 3 spirit
         await SecondaryResourceCmd.Gain(Owner!, FighterResources.FightingSpirit, 3);
-        FighterCombatUiActivatePatch.Refresh(Owner!);
 
         // Consume all frames for bonus
         var frames = FrameHelper.Get(Owner!);

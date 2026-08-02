@@ -20,7 +20,7 @@ public sealed class Bakkai : ModCardTemplate
         new DamageVar(4, ValueProp.Move)
     ];
 
-    protected override IEnumerable<string> RegisteredKeywordIds => [FighterKeywords.SpecialId, FighterKeywords.TipsyId];
+    public override IEnumerable<CardKeyword> CanonicalKeywords => [FighterKeywords.Special!.CardKeywordValue, FighterKeywords.Tipsy!.CardKeywordValue];
 
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: "Fighter/images/card_portraits/bakkai.png"

@@ -54,7 +54,7 @@
         </Reference>
 
         <Reference Include="STS2.RitsuLib">
-            <HintPath>$(Sts2WorkshopDir)\3747602295\lib\0.108.0\STS2-RitsuLib.dll</HintPath>
+            <HintPath>$(Sts2WorkshopDir)\3747602295\lib\0.109.0\STS2-RitsuLib.dll</HintPath>
             <Private>false</Private>
         </Reference>
         <PackageReference Include="Krafs.Publicizer" Version="2.3.0" PrivateAssets="All" />

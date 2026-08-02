@@ -10,6 +10,8 @@ dotnet build Fighter.csproj -c Release
 
 Always build from `.csproj`, not `.sln`. Post-build copies `.dll`, `.pdb`, and `Fighter.json` to the game's `mods/Fighter/`.
 
+**Requires RitsuLib ≥ 0.5.3** (workshop). Cards attach keywords/tags via the game-native `CardModel.CanonicalKeywords` / `CanonicalTags` overrides, e.g. `CanonicalKeywords => [FighterKeywords.Throw!.CardKeywordValue]`. The old RitsuLib `RegisteredKeywordIds` / `RegisteredCardTagIds` overrides were removed in 0.5.3 — do not use them.
+
 ## Architecture (RitsuLib Framework)
 
 All source in `Scripts/`. Uses `ModCardTemplate`, `ModPowerTemplate`, `ModRelicTemplate`, `ModCharacterTemplate` from `STS2RitsuLib.Scaffolding.*`. Auto-registration via `[RegisterCard]`, `[RegisterPower]`, `[RegisterRelic]`, `[RegisterCharacter]`.
@@ -31,11 +33,10 @@ Scripts/
 │   ├── Common/                  ← 15 cards (CannonSpike, Shoryuken, Hadoken, etc.)
 │   ├── Uncommon/                ← 11 cards (JinraiKick, Tenshin, QuickDash, etc.)
 │   └── Rare/                    ← 4 cards (GrandStorm, GetsugaSaiho, AshuraSenku, TundraStorm)
-├── Powers/                      ← 12 powers including FighterInnatePower (spirit system)
+├── Powers/                      ← 14 powers incl. FighterInnatePower, CounterHitPower, PunishCounterPower
 ├── Relics/                      ← FighterHeadband (starter), SuperArtTalisman (starter)
-├── Mechanics/                   ← CancelHelper, CounterHitState, SpiritHelper, TipsyHelper, TurnState
-├── Nodes/                       ← Godot UI nodes (FighterFrameCounter, FighterSuperGauge, FightingSpiritGauge)
-├── Patches/                     ← FighterCombatUiPatch (injects fighter gauges into combat UI)
+├── Mechanics/                   ← CancelHelper, SpiritHelper, TipsyHelper, SpecialHelper, IFighterTagged, TurnState
+├── Nodes/                       ← FighterGaugePanel (combat UI container), FighterFrameCounter, FighterSuperGauge, FightingSpiritGauge
 └── Keywords/
     └── FighterKeywords.cs       ← 7 keywords: Throw, Starter, Combo, Cancel, Special, Super, Tipsy
 ```
@@ -63,9 +64,9 @@ Scripts/
 ## Mechanics
 
 - **FrameAdvantage** — positive frames spendable on cancel/special; negative = enemy counter-hit
-- **Counter Hit A1** — attack enemy with Attack intent → +20% dmg, +2 frames (FighterHeadband)
+- **Counter Hit A1** — enemy with Attack intent gets `CounterHitPower` at player turn start; hitting it → +20% dmg, +2 frames
 - **Counter Hit A2** — enemy attacks player at negative frames → +20% to enemy
-- **Punish Counter B** — fully block enemy attack → next attack +20% dmg, +4 frames
+- **Punish Counter B** — fully block enemy attack → attacker gets `PunishCounterPower`; hitting it → +20% dmg, +4 frames
 - **Combo** — Starter cards grant Combo; Strike_H costs 0 when Combo active
 - **Cancel** — Cancel N card consumes stacks; next Special/Super costs -1 energy
 - **Fighting Spirit** — 6 stacks at combat start, +1 STR/DEX while active, per-turn +1; 0 = Burnout

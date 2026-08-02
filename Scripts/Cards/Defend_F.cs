@@ -20,7 +20,7 @@ public sealed class Defend_F : ModCardTemplate
         new BlockVar(5, ValueProp.Move)
     ];
 
-    protected override IEnumerable<string> RegisteredCardTagIds => ["Defend"];
+    protected override HashSet<CardTag> CanonicalTags => [CardTag.Defend];
 
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: "Fighter/images/card_portraits/defend_f.png"

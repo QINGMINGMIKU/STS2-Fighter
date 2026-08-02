@@ -21,7 +21,7 @@ public sealed class JinraiKick : ModCardTemplate
         new DamageVar(3, ValueProp.Move)
     ];
 
-    protected override IEnumerable<string> RegisteredCardTagIds => ["Strike"];
+    protected override HashSet<CardTag> CanonicalTags => [CardTag.Strike];
 
     public override CardAssetProfile AssetProfile => new(
         PortraitPath: "Fighter/images/card_portraits/jinrai_kick.png"

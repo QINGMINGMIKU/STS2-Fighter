@@ -4,11 +4,11 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Powers;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.Modding;
+using MegaCrit.Sts2.Core.Nodes.Combat;
 using STS2RitsuLib;
 using STS2RitsuLib.Combat.SecondaryResources;
 using STS2RitsuLib.Interop;
 using STS2RitsuLib.Keywords;
-using STS2RitsuLib.Patching.Core;
 using Logger = MegaCrit.Sts2.Core.Logging.Logger;
 
 namespace Fighter;
@@ -28,13 +28,6 @@ public class Entry
 
         RegisterSecondaryResources();
 
-        // RitsuLib-native patches for combat UI gauges
-        var patcher = RitsuLibFramework.CreatePatcher(ModId, "ui", "Fighter UI");
-        patcher.RegisterPatch<FighterCombatUiActivatePatch>();
-        patcher.RegisterPatch<FighterCombatUiAnimOutPatch>();
-        patcher.RegisterPatch<FighterCombatUiDeactivatePatch>();
-        patcher.PatchAll();
-
         RitsuLibFramework.CreateContentPack(ModId)
             .Character<FighterCharacter>()
             .Apply();
@@ -50,6 +43,7 @@ public class Entry
     {
         var registry = ModSecondaryResourceRegistry.For(ModId);
 
+        // ── Resource definitions ──
         // Use short local IDs for Register — RitsuLib normalizes them into compound IDs.
         // FighterResources.* constants carry the compound IDs used by SecondaryResourceCmd.
         registry.Register("frame_advantage", new SecondaryResourceDefinition(
@@ -80,17 +74,44 @@ public class Entry
             persistencePolicy: SecondaryResourcePersistencePolicy.Combat
         ));
         registry.AlwaysShowInCombatUiForCharacter<FighterCharacter>("fighting_spirit");
+
+        // ── Custom gauge panel (replaces manual FighterCombatUiPatch) ──
+        registry.RegisterCombatUi<FighterGaugePanel>(
+            "fighter_gauges",
+            _ => new FighterGaugePanel(),
+            ctx =>
+            {
+                if (ctx.Player is { Character: FighterCharacter })
+                {
+                    ctx.Node.Visible = true;
+                    ctx.Node.Refresh(ctx.Player);
+                }
+                else
+                {
+                    ctx.Node.Visible = false;
+                }
+            });
     }
 
     private static void OnSideTurnStarting(SideTurnStartingEvent e)
     {
         TurnState.Reset();
 
-        if (e.Side != CombatSide.Player) return;
+        // Enemy turn start → clear 确反康 from all enemies (lasts until their next turn)
+        if (e.Side != CombatSide.Player)
+        {
+            foreach (var enemy in e.CombatState.GetOpponentsOf(
+                         e.CombatState.Allies.FirstOrDefault(c => c.IsPlayer) ?? e.CombatState.Allies[0]))
+            {
+                var punish = enemy.GetPower<PunishCounterPower>();
+                if (punish != null)
+                    _ = PowerCmd.Remove(punish);
+            }
+            return;
+        }
 
         foreach (var creature in e.CombatState.Allies)
         {
-            // Apply innate Fighter passive only to Fighter character
             if (creature is { IsPlayer: true, Player.Character: FighterCharacter }
                 && creature.GetPower<FighterInnatePower>() == null)
             {

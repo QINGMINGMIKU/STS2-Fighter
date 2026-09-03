@@ -30,3 +30,8 @@ local.props
 
 # Rider
 *.DotSettings.user
+
+# Debug / crash artifacts — may embed session tokens, Steam IDs, save data
+_bugreport/
+BugReport-*.zip
+*.dmp

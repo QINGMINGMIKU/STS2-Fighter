@@ -7,7 +7,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$project = "C:\WorkSpace\ReCreation\STS2-Fighter"
+$project = $PSScriptRoot
 $gameDir = "C:\Program Files (x86)\Steam\steamapps\common\Slay the Spire 2"
 $modDir = "$gameDir\mods\Fighter"
 $godotExe = "C:\Tools\Godot_v4.5.1-stable_mono_win64\Godot_v4.5.1-stable_mono_win64.exe"

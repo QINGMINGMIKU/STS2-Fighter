@@ -30,6 +30,7 @@ local.props
 
 # Rider
 *.DotSettings.user
+Fighter.sln.DotSettings
 
 # Debug / crash artifacts — may embed session tokens, Steam IDs, save data
 _bugreport/
